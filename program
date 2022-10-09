@@ -1,0 +1,59 @@
+import smtplib
+import yagmail
+import pandas as pd
+import keyring
+import mysql.connector
+import time
+from datetime import date
+
+host= "127.0.0.1" # change if necessary
+user= "root"      # change if necessary
+passwd = input("Enter host password: ") 
+db = input("Enter your database name: ")
+
+mydb = mysql.connector.connect(
+     host=host,
+     user=user,
+     passwd=passwd,
+     database=db
+     )
+     
+query1 = """\
+SELECT * FROM TABLE
+"""
+df1 = pd.read_sql(query1, mydb)
+
+query2 = """\
+-- write query here
+"""
+df2 = pd.read_sql(query2, mydb)
+
+query3 = """\
+-- write query here
+"""                    
+df3 = pd.read_sql(query3, mydb)
+
+query4 = """\
+-- write query here
+"""                    
+df4 = pd.read_sql(query4, mydb)
+
+
+Email = input("Enter a sender's Gmail address: ")
+Email_Password = input("Enter the sender's Gmail Password: ")
+receiver = input("Enter a receiver Email address: ) 
+
+yag = yagmail.SMTP(Email)
+
+keyring.set_password("yagmail", Email, Email_Password)
+
+while True:
+    
+    yag.send(
+            to=receiver,
+            subject= "SQL_Queries",
+            contents=[df1.to_string(),df2.to_string(),df3.to_string(),df4.to_string()], 
+            )
+
+    print(date.today(),": " "sent")
+    time.sleep(86400) #  The number in brackets refers to the number of seconds between iterations. In this case, an email will be sent every 24 hours
